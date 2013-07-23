@@ -1,0 +1,6 @@
+[submodule "JeffBeck/Static-Analysis-with-Grails"]
+	path = JeffBeck/Static-Analysis-with-Grails
+	url = git@github.com:beckje01/gr8us-2013-static-talk.git
+[submodule "JeffBeck/Using-Forked-Grails-Plugins"]
+	path = JeffBeck/Using-Forked-Grails-Plugins
+	url = git@github.com:beckje01/gr8us-2013-plugin-talk.git
