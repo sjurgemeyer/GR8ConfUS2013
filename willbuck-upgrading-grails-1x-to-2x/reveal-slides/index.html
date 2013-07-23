@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Upgrading Grails 1.x to 2.x</title>
+
+		<meta name="description" content="Gr8 Conf 2013 Presentation on upgrading your grails version">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+		<div class="reveal">
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<!-- GR8 Conf Presentation START  -->
+				<!--  -->
+				<!--  -->
+				<section>
+					<h1>Upgrading from Grails 1.x to 2.x</h1>
+					<h3>Stories and Lessons Learned</h3>
+					<p>
+						<small>Will Buck, web developer, virtuwell</small>
+					</p>
+					<p>
+						<small><a href="http://twitter.com/wbucksoft">Twitter (@wbucksoft)</a></small>
+						<small><a href="http://www.github.com/willbuck">Github (willbuck)</a></small>
+						<small><a href="mailto:wbucksoft@gmail.com">Email (wbucksoft@gmail.com)</a></small>
+					</p>
+					<aside class="notes">
+						Last talk of the day, so lighten up the mood :)
+					</aside>
+				</section>
+
+				<section>					
+					<section>
+						<h2>A little about me</h2>
+						<p>(Will Buck)</p>
+						<aside class="notes">
+							Since I'm a new face amongst the speakers, I figured a little introduction was in order.
+						</aside>
+					</section>
+					<section>
+						<h2>Obligatory company shoutout</h2>
+						<img src="assets/virtuwell-logo.jpg" height="350" width="325">
+						<aside class="notes">
+							Local small company in St Paul.
+							Grails shop, I've been there a year and a half.
+							And yes, we're hiring.
+						</aside>
+					</section>
+					<section>
+						<h2>Minnesota Native</h2>
+						<img src="assets/ep-mn.png">
+						<aside class="notes">
+							Grew up here, lived here most of my life, love it here.
+							Even the snow is nice sometimes.
+						</aside>
+					</section>
+					<section>
+						<h2>Disney World Junkie</h2>
+						<img src="assets/will-buck-disney.jpg">
+						<aside class="notes">
+							This is me and my wife on what might be my 30th trip to Lake Buena Vista.
+							It's probably the place I've spent the most time besides here and Madison.
+						</aside>
+					</section>
+					<section>
+						<h2>Pro(?)-Am Trampoline Dodgeballer</h2>
+						<img src="assets/will-buck-dballer.jpg">
+						<aside class="notes">
+							Despite my larger stature, always been a huge fan of dodgeball, competed in an international tournament in LA last fall.
+						</aside>
+					</section>
+					<section>
+						<h2>Grails Guy</h2>						
+						<img src="assets/grails-logo.jpeg">
+						<aside class="notes">
+							And in case it wasn't already clear, I'm a big fan of Grails.
+							Learning mostly Java in school, Grails was quick to pick up and good to find resources for.
+						</aside>
+					</section>
+				</section>
+
+
+				<section>
+					<h2>Sharing Today:</h2>
+					<p>Case Study: 1.3.7 -> 2.1.0</p>
+					<img src="assets/helper-cat-grailz.jpg" height="400" width="330">
+					<aside class="notes">
+							Obligatory cat picture, glad I'm getting the presentation must-haves out of the way.
+							What I'd like to do is share with you guys some of our approaches, learnings and retrospective insights into how this upgrade process went for us.
+					</aside>
+				</section>
+
+				<section>
+					<h2>A little about what we did</h2>
+					<ul>
+						<li>8 In-House Plugins (some dependent on others)</li>
+						<li>3 Core Applications (one consumer-facing, two internal)</li>
+						<li>LOTS of testing overhaul</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Chime in!</h2>
+					<p>Many of you have done this, share your knowledge</p>
+				</section>
+
+
+				<section>
+					<h1>Brief Intro: Why are we doing this again?</h1>
+					<aside class="notes">
+						This talk isn't strictly about why to upgrade, every project will be different and it's up to you to decide if what you're getting is worth it.
+						With that said, it's important to know why we're doing this before we start, so we can convince stakeholders to commit resources to it.
+					</aside>
+				</section>
+
+				<section>
+					<!-- Vertical section -->	
+					<section>
+						<h2>Grails 2.X</h2>
+						<p>(Well duh)</p>
+					</section>
+					<section>
+						<div data-markdown>
+						[What's new in Grails 2.0 and above](http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew)
+						</div>
+						<aside class="notes">
+							Spend some time on this site,
+							But not too much time.
+						</aside>
+					</section>
+					<section>
+						<h2>Testability</h2>
+						<p>This would be a primary reason to upgrade.</p>
+						<p>Grails 2 introduced a *lot* of excellent testing support, including...</p>
+						<ul>
+							<li>In memory GORM (making unit testing criteria Queries possible)</li>
+							<li>Better Console Output</li>
+							<li>Cleaner test reports</li>	
+							<li>Annotation based mocking makes code more straight-forward (imho)</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Support</h2>
+						<p>Since much of the community is moving forward with Grails 2, it will be easier to:</p>
+						<ul>
+							<li>Get StackOverflow questions answered</li>
+							<li>Get a new feature in a plugin</li>
+							<li>Find talented developers familiar with your technology</li>
+							<li>Etc.</li>
+						</ul>
+					</section>
+					<section>
+						<h3>And More!</h3>
+						<ul>
+							<li>Groovy 1.8 support (or 2.0 in Grails 2.2+)</li>
+							<li>ORM improvements and more options (mongoDB for example)</li>
+							<li>Better default scaffolding (jQuery and HTML5)</li>
+							<li>Easier date parsing</li>
+							<li>Multiple Data Sources Support</li>
+							<li>Etc etc etc (read the docs, yo!)</li>
+						</ul>
+					</section> 
+				</section>
+
+				<section>
+					<h1>PREPARING TO UPGRADE: Bring the right tools</h1>
+					<img height="300" width="200" src="assets/fix-it-felix2.jpg"/>
+						<aside class="notes">
+							For those who don't know, this is Fix-it Felix, he's from the Disney movie Wreck It Ralph (told you I was a Disney-phile) and his motto is:
+							"I can fix it!"
+							He has a golden hammer, thought that was funny.
+						</aside>
+				</section>
+
+				<section>
+					<!-- Vertical Section -->
+					<section>						
+						<h2>Directory Diff Tool</h2>
+						<p>Kaleidoscope - http://www.kaleidoscopeapp.com/ </p>
+						<img src="assets/Kaleidoscope_Icon.png">
+						<p>BeyondCompare - http://www.scootersoftware.com/ </p>
+						<img src="assets/BC3_Icon.png">
+						<aside class="notes">
+							Highly recommended for doing side-by-side upgrade, free trial period may be all you need but when you need it, its an invaluable tool.
+							Also on the radar Araxis Merge (http://www.araxis.com/merge/)
+						</aside>
+					</section>
+
+					<section>
+						<h2>GVM</h2>
+						<p>Lets you jump between versions with ease</p>
+						<code>gvm install grails [version]</code>
+						<p>http://gvmtool.net/</p>
+						<aside class="notes">
+							Ask who's using it, recommend to do so if you aren't already.
+						</aside>
+					</section>
+
+					<section>
+						<h2>Source Control</h2>
+						<p>Know how to hop around and make incremental progress!</p>
+						<p>Git, Mercurial, maybe SVN</p>
+						<aside class="notes">
+							Mention Git as front-end for SVN but then maybe slightly harder to work together on branch, all the more reason to commit to this as fully as possible.
+							Don't know much about different VCS so whatever it is know it well.
+						</aside>
+					</section>
+
+					<section>
+						<h2>UNIT TESTS</h2>
+						<img src="assets/GoldenHammer.jpg" height="500" width="400">
+						<aside class="notes">
+							A good set of unit tests already surrounding your code is going to be necessary! Shore 'em up before you start!
+							Speaking of starting...
+						</aside>
+					</section>
+				</section>
+
+				<section>
+					<h1>HOW TO BEGIN</h1>
+					<img src="assets/press-start-mm.jpg">
+					<aside class="notes">
+						These are the basic steps we outlined to accomplish the task.
+					</aside>
+				</section>
+
+				<section>
+					<!-- Vertical Section -->
+					<section>
+						<h2>Start Fresh</h2>
+						<aside class="notes">
+							Upgrading in place may seem like the obvious choice, however the little extra work required to upgrade side-by-side pays off greatly.
+						</aside>
+					</section>	
+
+					<section>
+						<h2 class="fragment grow highlight-green">Side By Side</h2>
+						<p>vs<p> 
+						<h2 class="fragment shrink highlight-red">In-Place</h2>
+						<ul>
+							<li class="fragment">
+								Generates new-style meta files w/ proper dependencies
+							</li>
+							<li class="fragment">
+								Test both simultaneously
+							</li>
+							<li class="fragment">
+								Commit history will be cleaner - single commit of merge back!
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<code>grails upgrade</code> 
+						<h2>is dead to you!</h2>
+						<aside class="notes">
+							Can't stress this enough, it will save a lot of time to ignore grails upgrade and work side-by-side
+						</aside>
+					</section>
+
+					<section>
+						<h2>Get the tests passing first</h2>
+						<aside class="notes">
+							This isn't the only thing you'll need to do, but it helps to take the upgrade one app at a time, one plugin at a time, one test at a time.
+							That or you can blanket sweep for certain classes of general problems and work through it that way, your call.
+						</aside>
+					</section>
+
+					<section>
+						<h3>note: that will take awhile</h3>
+						<img src="assets/zan-tweet-dependencies1.png">
+						<aside class="notes">
+							Don't expect to be done easy breezy.
+						</aside>
+					</section>
+
+					<section>
+						<h2>Fire it up!</h2>
+						<aside class="notes">
+							Good unit testing will make this less painful, but ultimately you need to run things and try them out to find the outlying issues your tests perhaps weren't covering.
+						</aside>
+					</section>
+
+					<section>
+						<h2>Merging Back</h2>
+						<img src="assets/side-by-side-upgrade.png">
+						<aside class="notes">
+							Note that you may need to change your project name if you do this literally side by side.
+							Be familiar with your tools when you do this.
+						</aside>
+					</section>
+				</section>				
+
+
+				<section>
+					<h1>The Code</h1>
+					<h3>What 2 Watch 4</h3>
+				</section>
+
+
+				<section>
+					<h2>Common Ones</h2>
+					<p>Can largely be found in grails documentation</p>
+					<a href="http://grails.org/doc/latest/guide/upgradingFromPreviousVersionsOfGrails.html">Upgrading from previous versions of Grails</a>
+				</section>
+
+				<section>
+					<!-- Vertical Section -->
+					<section>
+						<h2>HSQL -> H2</h2>
+						<p>Changes in DataSource.groovy</p>
+						<pre>
+							<code data-trim contenteditable>
+dataSource {
+    driverClassName = "org.h2.Driver"
+    username = "sa"
+    password = ""
+}
+							</code>
+						</pre>
+						<aside class="notes">
+							Remember that this comes with the web db explorer, its useful if you're just proofing things out. Its at app/dbconsole
+						</aside>
+					</section>
+					<section>
+						<h2>Command Object @Validateable</h2>		
+						<pre>
+							<code data-trim contenteditable>
+@Validateable								
+class SearchCommand {
+	
+}
+							</code>
+						</pre>
+						<aside><a href="http://jira.grails.org/browse/GRAILS-9162">Note - see http://jira.grails.org/browse/GRAILS-9162</a></aside>
+					</section>
+					<section>
+						<h2>Lots of little things</h2>
+					</section>
+					<section>
+						<p>The redirect() method now uses the grails.serverURL config setting<p>
+							<aside class="notes">
+								This bit me on a side project where I deploy to a test environment and production, but didn't have a good build process to define these.
+								Just another example of good software practices and their benefits.
+							</aside>
+					</section>
+					<section>
+						<p>Public methods in controllers will now be treated as actions. If you don't want this, make them protected or private.<p>
+							<aside class="notes">
+								Wasn't really an issue for us, but I came across blog entries where this would be a fairly concerning security risk. Be mindful.
+							</aside>
+					</section>
+					<section>
+						<p>ConfigurationHolder.config -> grailsApplication.config<p>
+							<aside class="notes">
+								ConfigHolder is now deprecated, this one is just a bit tedious to change but quite straight-forward. 
+								Only difference is instead of mockConfig in your tests, you can now use that grailsApplication straight away! Speaking of tests...
+							</aside>
+					</section>
+				</section>
+
+
+				<section>
+					<h2>Testing - A new world order</h2>
+					<aside class="notes">
+								As mentioned previously, one of the biggest wins of 2.x is enhanced testing capabilities.
+								That also means, however, that a lot has changed, and you likely have much work ahead of you upgrading your tests.
+							</aside>
+				</section>
+
+				<section>
+					<!-- Vertical Section -->
+					<section>
+						<h2>Inheritance -> Annotations</h2>
+						<pre>
+							<code data-trim contenteditable>
+// Grails 1.x way								
+class myControllerTests extends GrailsUnitTestCase {
+	
+}
+							</code>
+						</pre>
+					</section>
+
+					<section>
+						<h2>Inheritance -> Annotations</h2>
+						<pre>
+							<code data-trim contenteditable>
+@TestFor(MyController)
+@Mock([MyDomain])
+class myControllerTests {
+	
+  void testSomething() {
+    // No need to mockDomain() anymore, just save away!
+    MyDomain testInstance = new MyDomain(property: 'value').save()
+
+    def result = controller.get()
+    
+    assert result == testInstance
+  }
+}
+							</code>
+						</pre>
+					</section>
+
+					<section>
+						<h2>Or check out some great plugins!</h2>
+						<pre>
+							<code data-trim contenteditable>
+// Grails 2.x way								
+@TestFor(MyController)
+@Build([MyDomain, MyOtherDomain]) //Build-test-data plugin is great!
+class myControllerSpec extends Specification { 
+  // Be Spock-tastic
+  void "testSomething"() {
+    given: "A domain instance to retrieve"
+    MyDomain testInstance = MyDomain.build(name: 'Will.i.am')
+    
+    when: "A call is issued to Controller.get"
+    def result = controller.get()
+
+    then: "We get the expected domain instance"
+    result == testInstance
+  }
+}
+							</code>
+						</pre>
+					</section>
+
+					<section>
+						<h2>Coming Soon!</h2>
+						<p>Grails 2.3 - Spock by Default!</p>
+						<a href="http://grails.org/doc/2.3.x/guide/introduction.html#whatsNew23">New in Grails 2.3</a>
+					</section>
+
+					<section>
+						<h2>You may find surprises...</h2>
+						<img src="assets/zan-tweet-unit-test-in-integration.png">
+					</section>
+
+					<section>
+						<p>Note: if you do have test-pollution...</p>
+						<a href="http://naleid.com/blog/2012/05/22/fixing-grails-tests-that-pass-in-isolation-but-fail-when-run-as-a-suite/">Ted Naleid's Blog on Finding Test Pollution</a>
+						<aside class="notes">
+							Since older versions of grails had less testing support, it's possible you have tests that are improperly mucking up metaClasses. 
+							Ted has a great blog post here on how to isolate the source of the issue.
+						</aside>
+					</section>
+
+				</section>
+
+
+				<section>
+					<h2>Tougher / Less Documented Gotchas</h2>
+				</section>
+
+				<section>
+					<h2>Plugin Dependency Definition</h2>				
+				</section>
+
+				<section>
+					<!-- Vertical Section -->
+					<section>
+						<h2>Application.properties - > BuildConfig.groovy</h2>
+						<aside class="notes">
+							While the app.properties are still somewhat functional, not every plugin is going to work in there. 
+							With new dependency management plumbing came a need to more tightly control what phases dependencies are added, save yourself the trouble and do things the new way.
+							Note that grails install-plugin can be a little wonky as well. 
+						</aside>
+					</section>
+					<section>
+						<h2>application.properties (Before)</h2>
+						<pre><code data-trim contenteditable>
+#Grails Metadata file
+#Sun Mar 25 15:53:36 CDT 2012
+app.grails.version=1.3.7
+app.name=patient-application
+app.servlet.version=2.4
+plugins.build-test-data=1.1.0
+plugins.code-coverage=1.1.7
+plugins.codenarc=0.5
+plugins.database-migration=1.0
+plugins.functional-test=1.2.7
+plugins.greenmail=1.2.1
+plugins.hibernate=1.3.7
+plugins.jms=1.2
+plugins.jmx=0.7
+plugins.joda-time=1.2
+plugins.jquery=1.4.1.1
+plugins.mail=0.9
+plugins.spock=0.5-groovy-1.7
+plugins.spring-security-core=1.1
+plugins.tomcat=1.3.7
+plugins.ui-performance=1.2.2
+						</code></pre>
+						<aside class="notes">
+							While the app.properties are still somewhat functional, not every plugin is going to work in there. 
+							With new dependency management plumbing came a need to more tightly control what phases dependencies are added, save yourself the trouble and do things the new way.
+							Note that grails install-plugin can be a little wonky as well. 
+						</aside>
+					</section>
+					<section>
+						<h2>BuildConfig.groovy (After)</h2>
+						<pre><code data-trim contenteditable>
+plugins {
+    build ":tomcat:$grailsVersion"
+
+    compile ":mail:1.0"   
+    compile ":greenmail:1.3.2"
+    compile ":build-test-data:2.0.3"
+    compile ":codenarc:0.17"
+    
+    compile (":functional-test:2.0.RC1")
+    compile ":jms:1.2"
+    compile ":jmx:0.7.2"
+    compile ":joda-time:1.4"
+    compile ":spring-security-core:1.2.7.3"
+    compile ":ui-performance:1.2.2"
+
+    runtime ":database-migration:1.1"
+    runtime ":hibernate:$grailsVersion"
+    runtime ":quartz:0.4.2"
+
+    test ":spock:0.6"
+}
+						</code></pre>
+						<aside class="notes">
+							While the app.properties are still somewhat functional, not every plugin is going to work in there. 
+							With new dependency management plumbing came a need to more tightly control what phases dependencies are added, save yourself the trouble and do things the new way.
+							Note that grails install-plugin can be a little wonky as well. 
+						</aside>
+					</section>
+					<section>
+						<h2>application.properties (After)</h2>
+						<pre><code data-trim contenteditable>
+#Grails Metadata file
+#Mon Mar 18 13:56:54 CDT 2013
+app.grails.version=2.1.0
+app.name=patient-application
+app.servlet.version=2.4
+						</code></pre>
+						<aside class="notes">
+							While the app.properties are still somewhat functional, not every plugin is going to work in there. 
+							With new dependency management plumbing came a need to more tightly control what phases dependencies are added, save yourself the trouble and do things the new way.
+							Note that grails install-plugin can be a little wonky as well. 
+						</aside>
+					</section>
+				</section>
+
+
+				<section>
+					<h2>Resources Plugin</h2>				
+				</section>
+				
+				<section>
+					<!-- Vertical Section -->
+					<section>
+						<p>
+							By default, JS, CSS, images etc are now
+							managed by the resources plugin.
+						</p>
+						<code>
+&lt;r:layoutResources&gt;
+						</code>
+						<br />
+						<code>
+&lt;r:require modules="jquery-ui, blueprint"&gt;
+						</code>
+					</section>
+
+					<section>
+						<p>
+							This can mean a *lot* of restructuring to your front-end file management.
+						</p>
+						<img src="assets/zan-tweet-resources-plugin.png">
+						<aside class="notes">
+							Be advised we found problems here for a little while. 
+							Be careful and thorough with your QA
+							Have some functional tests if you can
+						</aside>
+					</section>
+
+				</section>
+
+
+
+				<section>
+					<h2>Structured Properties</h2>
+				</section>
+
+				<section>
+					<!-- Vertical Section -->
+					<section>
+						<h2>Underscores in Domain Variables</h2>
+						<pre><code data-trim contenteditable>
+// in grails-app/domain/my-package
+class SomeDomain {
+	// A legitimate use case
+	String telephoneNumber
+	String telephoneNumber_areaCode
+	String telephoneNumber_prefix
+	String telephoneNumber_lineNumber
+
+	// Accidental oopsies, but won't kill things
+	String name
+	String name_sourceId
+
+	// NOW we're talking trouble
+	Date dateOfBirth
+	String dateOfBirth_sourceId
+}
+						</code></pre>
+					</section>
+					<section>
+						<p>
+							Discovering the shadowy corners...
+						</p>
+						<aside class="notes">
+							This speaks I think to something everyone will encounter in their own way, things find their way into our codebases that maybe aren't up to standards or have not been revisted in quite some time if they aren't application critical.
+						</aside>
+					</section>
+					<section>
+						<h2>Try Digging Deeper...</h2>
+						<img src="assets/github-images-databinding1.png">
+						<img src="assets/github-images-databinding2.png">
+						<img src="assets/github-images-databinding3.png">
+					</section>
+					<section>
+						<h2>And deeper.....</h2>
+						<img src="assets/structured-property-testing.png" height="600" width="700">
+					</section>
+					<section>
+						<h2>But eventually...</h2>
+						<p>in 1.3.7...</p>
+						<img src="assets/github-images-databinding4.png">
+						<p>the same???</p>
+					</section>
+					<section>
+						<h2>Fix it and let it go</h2>
+						<aside class="notes">
+							Moral of the story: once you know how to fix it, it's up to you how much time you have to figure out what the issue is.
+						</aside>
+					</section>
+				</section>
+
+
+				<section>
+					<h1>Takeaway Points</h1>
+				</section>
+
+				<section>
+					<!-- Vertical Section -->
+					<section>
+						<h2>TAKE YOUR TIME</h2>
+						<aside class="notes">
+							This is a conversation to have with the business leaders. 
+							Be honest that this is a dedication to key resources, but do your best to explain the risks in staying behind, the productivity and recruiting benefits to upgrading. 
+						</aside>
+					</section>
+
+					<section>
+						<p>Try to keep new feature development to a minimum</p>
+						<aside class="notes">
+							Again, explain to your stakeholders that while you know there are needs to add functionality, this is a time to keep that to an absolute minimum.
+						</aside>
+					</section>
+
+					<section>
+						<p>Do a back-merge all at once, right before finishing. Communicate with your team!</p>
+						<aside class="notes">
+							We made the mistake of trying to periodically re-base with development. This is a very bad idea as it makes it near-impossible to track what's different between your side-by-side changes on purpose and what's creeping in from new features.
+							Finish your upgrade work, rebase and fix up what needs upgrading of the new features, and move quickly to merge back!
+						</aside>
+					</section>
+
+					<section>
+						<p>Take a look for existing docs on how upgrade problems were solved...</p>
+						<aside class="notes">
+							It may seem like slim pickings at first, but there actually is a fair bit out there. Be patient and flex your search-fu.
+						</aside>
+					</section>
+
+					<section>
+						<p>... but know that some problems will be unique to your codebase.</p>
+						<aside class="notes">
+							You also can't expect everyone to have encountered everything. Like my example of the structured properties or Zan's unit test in the integration folder, crazy things can come out of the woodwork.
+							Have confidence, be like Felix, say "I can fix it!"
+						</aside>
+					</section>
+					<section>
+						<p>Don't fear the source, love the source.</p>
+						<aside class="notes">
+							Obviously like me you don't want to get so wrapped up in knowing the answer that you delay your upgrade any longer, but be comfortable with the source code.
+							Debug through it, learn more about why your probelm is happening, and act accordingly.
+						</aside>
+					</section>
+					<section>
+						<p>If all else fails, ask the community if you get stuck!</p>
+						<img src="assets/zan-tweet-dependencies2.png">
+						<aside class="notes">
+							We have the benefit of a wonderful community of talented developers, don't abuse their kindness but don't be shy to ask for a hand here and there either!
+							If you've done your due diligence, people may even enjoy helping :)
+						</aside>
+					</section>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						###Resources:
+
+						- [Grails Docs: Upgrading From Previous Versions](http://grails.org/doc/latest/guide/upgradingFromPreviousVersionsOfGrails.html)
+						- [O`Reilly Open Feedback Publishing: Programming Grails](http://ofps.oreilly.com/titles/9781449323936/chapter_upgrading.html)
+						- [Ted Naleids Blog - Upgrading to Grails 2 Unit Testing](http://naleid.com/blog/2012/05/01/upgrading-to-grails-2-unit-testing/)
+						- [Rob Fletchers Blog - Grails 2 Upgrade Part 1](http://blog.freeside.co/post/41774508756/grails-2-upgrade-part-1) (FYI there was no part 2)
+						- [Technipelago Blog - Grails 1.3.7 to 2.0.1 upgrade experiences](http://www.technipelago.se/content/technipelago/blog/grails-upgrade-1.3.7-to-2.0.1)
+
+					</script>
+				</section>
+
+				<section>
+					<h5>Special thanks to:</h5>
+					<ul>
+						<li>Zan Thrash</li>
+						<li>Zach Legein</li>
+						<li>Zach Lendon</li>						
+						<li>Colin Harrington</li>
+						<li>Senthil Kumaran</li>
+						<li>Team @ virtuwell</li>
+						<li>and My wife, Virginia</li>
+					</ul>
+					<aside class="notes">
+						<h5>Image sources:</h5>
+						<ul>
+							<li>I can Fix It Felix - http://fc01.deviantart.net/fs70/f/2012/220/6/7/fix_it_felix_jr__by_death_driver_5000-d5adtoy.png </li>
+							<li>Fix It Felix Keep Calm - http://24.media.tumblr.com/tumblr_mdrs35k1QH1r1rrobo1_1280.jpg</li>
+							<li>Fix It Felix - http://canon.umwblogs.org/files/2012/11/Fix-It-Felix.jpeg </li>
+							<li>Fix It Felix 2 - http://25.media.tumblr.com/tumblr_mcx3lqyjpN1r4wlx4o4_1280.jpg</li>						
+							<li>Mega Man Press Start - http://4.bp.blogspot.com/_GKJUJLyGdZQ/THrdEGSXkaI/AAAAAAAAAAU/uqkQHhExENM/s1600/press+start.jpg</li>
+						</ul>
+					</aside>
+				</section>
+
+
+				<section>
+					<h1>THANKS FOR LISTENING!</h1>
+					<aside>Any questions?</aside>
+					<a href="http://tinyurl.com/gr8wbuck13">Give me feedback! http://tinyurl.com/gr8wbuck13</a>
+					<p>
+						<small>My info (again)</small>
+						<small><a href="http://twitter.com/wbucksoft">Twitter (@wbucksoft)</a></small>
+						<small><a href="http://www.github.com/willbuck">Github (willbuck)</a></small>
+						<small><a href="mailto:wbucksoft@gmail.com">Email (wbucksoft@gmail.com)</a></small>
+					</p>
+					<aside class="notes">
+						Don't forget OPI happy hour @ Seven after this!
+					</aside>
+				</section>
+				<!--  -->
+				<!--  -->
+				<!-- GR8 Conf Presentation END  -->
+				
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
