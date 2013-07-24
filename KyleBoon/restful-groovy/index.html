@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>RESTful Groovy</title>
+
+	<meta name="description" content="">
+	<meta name="author" content="Kyle Boon">
+
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link rel="stylesheet" href="css/reveal.min.css">
+	<link rel="stylesheet" href="css/theme/simple.css" id="theme">
+
+	<!-- For syntax highlighting -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+	<script>
+	document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+	</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>RESTful Groovy</h1>
+					<small>Options for building a Services Oriented Architecture in Groovy</small>
+					<p>Kyle Boon</p>
+				</section>
+				<section>
+					<h2>Kyle Boon</h2>
+					<span style="float: left;">
+					<div style="text-align: right;">Technical Lead @ Bloomhealth</div>
+						<div style="text-align: right;">kyle.f.boon@gmail.com</div>
+						<div style="text-align: right;">@kyleboon</div>
+						<div style="text-align: right;">http://www.kyleboon.org</div>
+					</span>
+					<span style="float: right;">
+						<img src="http://i.imgur.com/MSnknm0.jpg"
+						style="line-height: 1.2em;font-size: 36.0px;letter-spacing: -0.02em;">
+					</span>
+				</section>
+				<section>
+					<h2>Architecture 2011</h2>
+					<div class="fragment"><img src='images/1app.png'/></div>
+				</section>
+				<section>
+					<h2>Architecture 2012</h2>
+					<div class="fragment"><img src='images/2apps.png'/></div>
+				</section>
+				<section>
+					<h2>Architecture 2013</h2>
+					<div class="fragment"><img src='images/soa.png'/></div>
+				</section>
+				<section>
+					<h2>Goals</h2>
+					<ul>
+						<li>Separate components</li>
+						<li>Allow for different SLAs for each component</li>
+						<li>Be able to combine components in different ways</li>
+						<li>Increase developer productivity and ownership</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Complete Tool Chain</h2>
+					<ul>
+                		<li>Groovy</li>
+                		<li>Grails for web applications</li>
+                		<li>Dropwizard for JSON web services</li>
+                		<li>Gradle for builds</li>
+                		<li>Swagger for Service Discovery</li>
+                		<li>Spock for testing</li>
+                		<li>Gatling for Performace/Load Testing</li>
+                		<li>Redis for Caching</li>
+                		<li>RabbitMQ for messaging</li>
+                		<li>Chef for infrastructure</li>
+            		</ul>
+	    		</section>
+				<section>
+					<h2>What is Dropwizard</h2>
+
+					<div style="text-align: left;">Dropwizard is a heavily opinionated framework for building web services
+						on the JVM. &nbsp;It is mostly glue around mature java libraries like Jetty, Jersey, Jackson and
+						Guava.
+					</div>
+					<div style="text-align: left;">
+						<br>
+					</div>
+					<blockquote>Dropwizard has out-of-the-box support for sophisticated configuration, application metrics,
+						logging, operational tools, and much more, allowing you and your team to ship a production-quality
+						HTTP+JSON web service in the shortest time possible.
+					</blockquote>
+				</section>
+				<section>
+					<h2>Who Created it?</h2>
+					<span style="float: left;">
+						<div>@coda</div>
+						<div>
+							<p style="text-align: left; line-height: 1.2em; font-size: 18px; letter-spacing: -0.02em;">As I've said before, the only reason Dropwizard exists at all is to provide <br> opinions on what a service should be.</p>
+
+							<p style="text-align: left; line-height: 1.2em; font-size: 18px; letter-spacing: -0.02em;">It uses fat JARs because I think they work better.</p>
+
+							<p style="text-align: left; line-height: 1.2em; font-size: 18px; letter-spacing: -0.02em;">It embeds Jetty because I think that works better.</p>
+
+							<p style="text-align: left; line-height: 1.2em; font-size: 18px; letter-spacing: -0.02em;">It uses Jackson because I think that works better.</p>
+
+							<p style="text-align: left; line-height: 1.2em; font-size: 18px; letter-spacing: -0.02em;">It uses Jersey because I think that works better.</p>
+
+							<p style="text-align: left; line-height: 1.2em; font-size: 18px; letter-spacing: -0.02em;">It has a single YAML configuration file because I think that works better.</p>
+
+							<p style="text-align: left; line-height: 1.2em; font-size: 18px; letter-spacing: -0.02em;">It wraps Logback because I think that works better.</p>	
+						</div>
+					</span>
+					<span style="float: right;">
+						<img src="https://twimg0-a.akamaihd.net/profile_images/959504887/horseshit.jpg"
+						style="line-height: 1.2em;font-size: 36.0px;letter-spacing: -0.02em;">
+					</span>
+				</section>
+				<section>
+					<h2>How does it work?</h2>
+
+					<div>Deployed as a fat jar and starts jetty. No need for a container.</div>
+					<div>
+						<pre><code contenteditable style="font-size: 18px; margin-top: 20px;">public static void main(String[] args) throws Exception {
+	new ContactsService().run(args)
+}</code></pre>
+					</div>
+					<div>Start the server from the command line by running: </div>
+					<div>
+						<pre><code>java -jar contact_dropwizard-shadow-0.1.0-SNAPSHOT.jar 
+server start dev_config.yml</code></pre>
+					</div>
+				</section>
+				<section>
+					<h2>The Service</h2>
+					<div>Services are a collection of bundles, commands, healthchecks, tasks and resources. The service class defines all of the abilities of your application.</div>
+					<div>
+						<pre><code class="java">@Override
+public void initialize(Bootstrap bootstrap) {
+	bootstrap.name = 'configuration_service'
+
+	bootstrap.addBundle migrationsBundle
+	bootstrap.addBundle hibernateBundle
+	bootstrap.addBundle(new AssetsBundle('/swagger-ui-1.1.0/', '/swagger'))
+	bootstrap.addCommand(new migrationsCommand())
+}
+
+@Override
+public void run(ContactsConfiguration configuration,
+	Environment environment) throws ClassNotFoundException {
+
+	ContactDAO contactDAO = new ContactDAO(hibernateBundle.sessionFactory)
+	environment.addResource(new ContactResource(contactDAO))
+}</code></pre>
+					</div>
+				</section>
+				<section>
+				<h2>The Resource</h2>
+				<div>Resources model what is exposed via your RESTful API. Dropwizard uses Jersey for this so these classes are mostly jersey annotations.</div>
+				<div>
+					<pre><code class="java">@Path('/contacts')
+@Produces(MediaType.APPLICATION_JSON)
+class ContactResource {
+	private final ContactDAO contactDAO
+
+	public ContactResource(ContactDAO contactDAO) {
+		this.contactDAO = contactDAO
+	}
+
+
+	@Timed(name = 'createContact')
+	@POST
+	@UnitOfWork
+	public Contact createContact(@Valid Contact contact) {
+		return contactDAO.saveOrUpdate(contact)
+	}
+}
+					</code></pre>
+				</div>
+			</section>
+<section>
+	<h2>The Representation</h2>
+	<div>Your POGOs will be turned into JSON via Jackson. Hibernate Validator lets you specify validation rules.</div>
+	<div>
+		<pre><code contenteditable style="font-size: 18px; margin-top: 20px;">@ToString
+@EqualsAndHashCode
+class Contact {
+	@JsonProperty
+	Long id
+
+	@NotNull
+	@NotEmpty
+	@JsonProperty
+	String firstName
+
+	@NotNull
+	@NotEmpty
+	@JsonProperty
+	String lastName
+
+	@Transient
+	@JsonIgnore
+	def someCrap = false
+}</code></pre>
+</div>
+</section>
+<section>
+	<h2>Metrics</h2>
+	<div>Yammer Metrics is built in and provides metrics over an administration port (8081). Resources can
+		be annotated with <code>@Timed</code> or <code>@Metered</code>, and <code>@ExceptionMetered</code>.</div>
+		<pre><code>"post-requests" : {
+	"type" : "timer",
+    	"duration" : {
+        "unit" : "milliseconds",
+        "min" : 0.0,
+        "max" : 0.0,
+        "mean" : 0.0,
+        "std_dev" : 0.0,
+        "median" : 0.0,
+        "p75" : 0.0,
+        "p95" : 0.0,
+        "p98" : 0.0,
+        "p99" : 0.0,
+        "p999" : 0.0
+    },
+    "rate" : {
+        "unit" : "seconds",
+        "count" : 0,
+        "mean" : 0.0,
+        "m1" : 0.0,
+        "m5" : 0.0,
+        "m15" : 0.0
+      }
+    }</code></pre>
+
+	</section>
+	<section>
+		<h2>Health Checks</h2>
+		<div>Health Checks are a method to make sure the infrastructure your service depends on are all running.
+			They are accessible on the administration port.</div>
+			<pre><code class="java">public class RedisHealthCheck extends HealthCheck {
+    private static final String ECHO = 'checking'
+    private final JedisPool jedisPool
+
+    public RedisHealthCheck(JedisPool jedisPool) {
+        super('redis')
+        this.jedisPool = jedisPool
+    }
+
+    @Override
+    protected Result check() throws Exception {
+        if ( ECHO.equalsIgnoreCase(jedisPool.resource.echo(ECHO)) ) {
+            return Result.healthy()
+        }
+
+        return Result.unhealthy('ManagedJedisPool connectivity is down!')
+    }
+}</code></pre>
+		</section>
+		<section>
+			<h2>Bundles</h2>
+			<div>Bundles are reusable blocks of behaviour designed to be reused across services. Assets, Hibernate and
+					Liquibase are all implemented as Dropwizard Bundles.</div>
+			<pre><code>@Slf4j
+abstract class RedisBundle implements ConfiguredBundle {
+    ManagedJedisPool jedisPool
+
+    abstract RedisConfiguration getRedisConfiguration(T configuration)
+
+    @Override
+    public final void initialize(Bootstrap bootstrap) {
+        log.info('Initializing Redis Bundle')
+    }
+
+    @Override
+    public final void run(T configuration, Environment environment) throws Exception {
+        jedisPool = new ManagedJedisPool(
+                new JedisPoolConfig(),
+                getRedisConfiguration(configuration).host,
+                getRedisConfiguration(configuration).port,
+                getRedisConfiguration(configuration).timeout,
+                getRedisConfiguration(configuration).db)
+
+        environment.manage(jedisPool)
+        environment.addHealthCheck(new RedisHealthCheck(jedisPool))
+    }
+}</code></pre>
+		</section>
+		<section>
+			<h2>Commands</h2>
+			<div>Commands add options to the command line interface of your service. For example the server starts based
+			on the 'server' command. Migrations run based on the 'db migrate' command. You might add your own command
+			for running functional tests or seeding the database.</div>
+		</section>
+		<section>
+			<h2>Tasks</h2>
+			<div>Tasks are run time actions available over the administration port. Dropwizard ships with a garbage
+				collection task. You might want to right a task to clean a cache by key.</div>
+			<pre><code>class FlushRedisTask extends Task {
+    ManagedJedisPool managedJedisPool
+
+    protected FlushRedisTask(String name, ManagedJedisPool managedJedisPool) {
+        super(name)
+        this.managedJedisPool = managedJedisPool
+    }
+
+    @Override
+    void execute(Map parameters, PrintWriter output) throws Exception {
+        Jedis jedis = managedJedisPool.resource
+        jedis.flushDB()
+    }
+}</code></pre>
+		</section>
+		<section>
+        	<h2>Other Stuff</h2>
+        	<div>
+        		<ul>
+            		<li>Configuration</li>
+            		<li>Logging</li>
+            		<li>Hibernate/JDBI</li>
+            		<li>Clients</li>
+            		<li>Authentication</li>
+            		<li>Views</li>
+        		</ul>
+        	</div>
+    	</section>
+		<section>
+			<h2>Grails 2.3</h2>
+			<div>
+				<ul>
+					<li>New REST APIs, making it easy to build REST APIs in Grails</li>
+					<li>Scaffolding plugin that can generate REST controllers and Async controllers</li>
+				</ul>
+			</div>
+		</section>
+		<section>
+			<h2>Declaring the resource as part of the domain</h2>
+			<pre><code class="java">package grails.example
+
+import grails.rest.*
+
+@Resource(uri='/contacts', formats=['json', 'xml'])
+class Contact {
+	String firstName
+	String lastName
+	String jobTitle
+	String phoneNumber
+	Address address
+
+    static constraints = {
+    }
+}</code></pre>
+		</section>
+		<section>
+			<h2>Declaring the resource in UrlMappings.groovy</h2>
+			<pre><code>"/contacts"(resources:'contact')</code></pre>
+			<p>or</p>
+			<pre><code>"/contacts"(resources:'contact', exclude:['delete'])</code></pre>
+			<p>or</p>
+			<pre><code>"/contacts"(resources:'contact', include:['index', 'show'])</code></pre>
+		</section>
+		<section>
+			<h2>Default URL patterns</h2>
+			<table>
+				<tbody>
+					<tr><th>HTTP Method</th><th>URI</th><th>Grails Action</th></tr>
+					<tr class="table-odd"><td>GET</td><td>/contacts</td><td>index</td></tr>
+					<tr class="table-even"><td>GET</td><td>/contacts/create</td><td>create</td></tr>
+					<tr class="table-odd"><td>POST</td><td>/contacts</td><td>save</td></tr>
+					<tr class="table-even"><td>GET</td><td>/contacts/${id}</td><td>show</td></tr>
+					<tr class="table-odd"><td>GET</td><td>/contacts/${id}/edit</td><td>edit</td></tr>
+					<tr class="table-even"><td>PUT</td><td>/contacts/${id}</td><td>update</td></tr>
+					<tr class="table-odd"><td>DELETE</td><td>/contacts/${id}</td><td>delete</td></tr></tbody>
+			</table>
+		</section>
+		<section>
+			<h2>Nested Resources</h2>
+			<pre><code>"/contacts"(resources:'contact') {
+  "/addresses"(resources:"address")
+}</code></pre>
+		</section>
+		<section>
+			<h2>Default Nested Resrouce URL patterns</h2>
+			<table>
+				<tbody>
+					<tr><th>HTTP Method</th><th>URI</th><th>Grails Action</th></tr>
+					<tr class="table-odd"><td>GET</td><td>/contacts/{$id}/addresses</td><td>index</td></tr>
+					<tr class="table-even"><td>GET</td><td>/contacts/{$id}/addresses/create</td><td>create</td></tr>
+					<tr class="table-odd"><td>POST</td><td>/contacts/{$id}/addresses</td><td>save</td></tr>
+					<tr class="table-even"><td>GET</td><td>/contacts/{$id}/addresses/${id}</td><td>show</td></tr>
+					<tr class="table-odd"><td>GET</td><td>/contacts/{$id}/addresses/${id}/edit</td><td>edit</td></tr>
+					<tr class="table-even"><td>PUT</td><td>/contacts/{$id}/addresses/${id}</td><td>update</td></tr>
+					<tr class="table-odd"><td>DELETE</td><td>/contacts/{id}/addresses/${id}</td><td>delete</td></tr>
+				</tbody>
+			</table>
+		</section>
+		<section>
+			<h2>Versioning APIs</h2>
+			<pre><code>"/contacts/v1"(resources:"contact", namespace:'v1')
+"/contacts/v2"(resources:"contacts", namespace:'v2')</code></pre>
+			<p>or</p>
+			<pre><code>"/books"(version:'1.0', resources:"book", namespace:'v1')
+"/books"(version:'2.0', resources:"book", namespace:'v2')</code></pre>
+		</section>
+		<section>
+			<h2>More options</h2>
+			<ul>
+				<li>Using the RestController super class</li>
+				<li>Implementing a REST controller from scratch</li>
+				<li>Using a generated REST controller form the scaffold plugin</li>
+			</ul>
+		</section>
+		<section>
+			<h2>Hypermedia as the Engine of Application State</h2>
+			<p>Allows the idea of a 'uniform interface' for REST. Services are self documenting and describing in the sense
+				that each resource gives the clients the links necessary to change the state of that resource.</p>
+		</section>
+		<section>
+			<h2>JSON+HAL example</h2>
+			<pre><code>HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/vnd.books.org.book+json;charset=ISO-8859-1
+{
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/myapp/books/1",
+      "hreflang": "en",
+      "type": "application/vnd.books.org.book+json"
+    }
+    "publisher": {
+        "href": "http://localhost:8080/myapp/books/1/publisher",
+        "hreflang": "en"
+    }
+  },
+  "title": ""The Stand""
+}</code></pre>
+		</section>
+		<section>
+			<h2>Custom MIME types</h2>
+			<pre><code>import grails.rest.render.hal.*
+beans = {
+    halContactRenderer(HalJsonRenderer, grails.example.Contact)
+}</code></pre>
+		<pre><code>grails.mime.types = [
+    all:      "*/*",
+    book:     "application/vnd.books.org.book+json",
+    bookList: "application/vnd.books.org.booklist+json",
+    …
+]</code></pre>
+			<pre><code>import grails.rest.render.hal.*
+import org.codehaus.groovy.grails.web.mime.*
+beans = {
+    halBookRenderer(HalJsonRenderer, rest.test.Book, new MimeType("application/vnd.books.org.book+json", [v:"1.0"]))
+    halBookListRenderer(HalJsonCollectionRenderer, rest.test.Book, new MimeType("application/vnd.books.org.booklist+json", [v:"1.0"]))
+}</code></pre>
+		</section>
+		<section>
+			<h2>Non REST stuff in 2.3</h2>
+			<ul>
+				<li>Changed resolver from ivy to maven</li>
+				<li>Declarative transaction declaration</li>
+				<li>Forked execution mode for speedier test</li>
+				<li>Hibernate 4</li>
+			<ul>
+		</section>
+
+		<section>
+			<h2>Metrics gathering</h2>
+			<p>No metrics collection by default for grails applications</p>
+			<ul>
+				<li>Yammer Metrics Plugin</li>
+				<li>New Relic</li>
+				<li>Custom code</li>
+			</ul>
+		</section>
+		<section>
+			<h2>Dropwizard Main Benefits</h2>
+			<ul>
+				<li>Dead simple deployments</li>
+				<li>Built in metrics collection</li>
+				<li>Smaller than grails</li>
+				<li>No Spring</li>
+				<li>More choices made for you</li>
+			<ul>
+		</section>
+		<section>
+			<h2>Grails Main Benefits</h2>
+			<ul>
+				<li>Great Community</li>
+				<li>Large Library of Plugins</li>
+				<li>Less opiniated</li>
+				<li>More Conventions</li>
+				<li>Supports HATEOAS and XML</li>
+			</ul>
+		</section>
+		<section>
+			<h2>Conclusion</h2>
+			<p>There is no spoon.</p>
+		</section>
+		<section>
+        	<h2>References</h2>
+        <div>
+            <ul>
+                <li>
+                    <a href="http://dropwizard.codahale.com/">Dropwizard User Guide</a>
+                </li>
+                <li>
+                    <a href="https://groups.google.com/forum/#!forum/dropwizard-user">Dropwizard User Group</a>
+                </li>
+                <li>
+                    <a href="https://github.com/codahale/dropwizard">https://github.com/codahale/dropwizard</a>
+                </li>
+                <li>
+                    <a href="http://vimeo.com/49822005">Presentation about Dropwizard @ Yammer</a>
+                </li>
+                <li>
+                    <a href="http://vimeo.com/37930578">Presentation about Dropwizard @ Simple</a>
+                </li>
+                <li>
+                    <a href="http://www.youtube.com/watch?v=czes-oa0yik">Coda Hale and Metrics</a>
+                </li>
+                <li>
+                    <a href="http://vimeo.com/40988625">Coda Hale and the Programming Ape</a>
+                </li>
+                <li>
+                	<a hred="http://grails.org/doc/2.3.x/guide/single.html#REST">Grails 2.3 REST improvements</a>
+                </li>
+            </ul>
+        </div>
+    </section>
+    <section>
+        <h2>Code we've Looked at</h2>
+        <div>
+            <ul>
+                <a href="https://github.com/kyleboon/gr8conf-restful-groovy"><li>Presentation and Example Code</li></a>
+                <a href="http://developers.helloreverb.com/swagger"><li>Swagger</li></a>
+                <a href="http://github.com/kyleboon/enhanced-groovydoc"><li>Enhanced Groovy Doc</li></a>
+                <a href="http://github.com/kyleboon/swagger-jaxrs-doclet"><li>swagger-jaxrs-doclet</li></a>
+            </ul>
+        </div>
+    </section>
+    <section>
+        <h2>Thanks</h2>
+        <div>
+            <p>A special thanks to the people who actually figured all this stuff out. Including but not limited to:</p>
+            <ul>
+                <li>Chad Small</li>
+                <li>Sairam Rekapalli</li>
+                <li>Ryley Gahagan</li>
+                <li>Charlie Knudsen</li>
+                <li>John Engelman</li>
+            </ul>
+        </div>
+    </section>
+		<section>
+			<h2>Kyle Boon</h2>
+			<span style="float: left;">
+				<div style="text-align: right;">Technical Lead @ Bloomhealth</div>
+				<div style="text-align: right;">kyle.f.boon@gmail.com</div>
+				<div style="text-align: right;">@kyleboon</div>
+				<div style="text-align: right;">http://www.kyleboon.org</div>
+			</span>
+			<span style="float: right;">
+				<img src="http://i.imgur.com/MSnknm0.jpg"
+				style="line-height: 1.2em;font-size: 36.0px;letter-spacing: -0.02em;">
+			</span>
+		</section>
+	</div>
+
+
+
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.min.js"></script>
+
+<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+				{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+				{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+				{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+				{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+				{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+				{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+					]
+				});
+
+</script>
+
+</body>
+</html>
