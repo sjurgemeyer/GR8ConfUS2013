@@ -1,0 +1,70 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.grails.org/grails/repo" }
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:2.0.0-SNAPSHOT"
+    }
+}
+
+group = "org.company"
+version = "1.0"
+
+apply plugin: "grails"
+apply plugin: "maven"
+
+grails {
+    grailsVersion "2.2.0"
+}
+
+repositories {
+    maven { url "http://repo.grails.org/grails/repo" }
+}
+
+dependencies {
+    compile "org.grails.plugins:hibernate:$grails.grailsVersion"
+    compile "org.grails.plugins:tomcat:$grails.grailsVersion"
+    compile "org.grails.plugins:jquery:1.10.2"
+    compile project(":library")
+}
+
+import org.grails.gradle.plugin.GrailsTask
+
+task test(type: GrailsTask) {
+    command "test-app"
+    args "unit:"
+}
+
+task war(type: GrailsTask) {
+    ext.file = file("$buildDir/$project.name-${project.version}.war")
+    command "war"
+    args "$file"
+}
+
+artifacts {
+    archives(war.file) {
+        builtBy war
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file://$buildDir/repo")
+        }
+    }
+}
+
+if (project.hasProperty("ideMode")) {
+    configurations.all { configuration ->
+        dependencies.all { dependency ->
+            if (dependency instanceof ProjectDependency) {
+                def otherProject = dependency.dependencyProject
+                configuration.dependencies.remove(dependency)
+                def ideClassFiles = rootProject.files("out/production/$otherProject.name")
+                def ideClassFilesDependency = otherProject.dependencies.create(ideClassFiles)
+                configuration.dependencies.add(ideClassFilesDependency)
+            }
+        }
+    }
+}
