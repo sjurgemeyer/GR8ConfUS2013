@@ -4,3 +4,6 @@
 [submodule "JeffBeck/Using-Forked-Grails-Plugins"]
 	path = JeffBeck/Using-Forked-Grails-Plugins
 	url = git@github.com:beckje01/gr8us-2013-plugin-talk.git
+[submodule "RobFletcher/hipsteroid"]
+	path = RobFletcher/hipsteroid
+	url = git@github.com:robfletcher/hipsteroid.git
