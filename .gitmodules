@@ -7,3 +7,6 @@
 [submodule "RobFletcher/hipsteroid"]
 	path = RobFletcher/hipsteroid
 	url = git@github.com:robfletcher/hipsteroid.git
+[submodule "StevePember/js-spa-fundamentals"]
+	path = StevePember/js-spa-fundamentals
+	url = git@github.com:spember/gr8conf2013-javascript.git
