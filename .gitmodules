@@ -10,3 +10,9 @@
 [submodule "StevePember/js-spa-fundamentals"]
 	path = StevePember/js-spa-fundamentals
 	url = git@github.com:spember/gr8conf2013-javascript.git
+[submodule "MarcoVermeulen/cuke-grails-demo"]
+	path = MarcoVermeulen/cuke-grails-demo
+	url = git@github.com:marcoVermeulen/cuke-grails-demo.git
+[submodule "MarcoVermeulen/cuke-gradle-demo"]
+	path = MarcoVermeulen/cuke-gradle-demo
+	url = git@github.com:marcoVermeulen/cuke-gradle-demo.git
