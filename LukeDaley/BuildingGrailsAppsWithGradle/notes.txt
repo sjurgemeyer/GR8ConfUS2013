@@ -1,0 +1,9 @@
+There were no slides for this talk.
+
+The finished version of the project that was built is available in the 'multiproject' directory.
+
+For more information on the 'grails-gradle-plugin', visit: https://github.com/grails/grails-gradle-plugin
+
+If you have questions, you can get in contact via Twitter: @ldaley.
+
+Cheers.
