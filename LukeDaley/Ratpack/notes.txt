@@ -1,0 +1,11 @@
+There were no slides for this talk.
+
+We worked through existing example Ratpack projects.
+
+* https://github.com/ratpack/example-ratpack-standalone-groovy-script
+* https://github.com/ratpack/example-ratpack-gradle-groovy-app
+* https://github.com/ratpack/example-ratpack-gradle-java-app
+
+For more information on Ratpack see http://www.ratpack-framework.org/.
+
+Follow @ratpackweb on Twitter!
