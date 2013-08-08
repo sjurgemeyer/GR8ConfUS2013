@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<head>
+	<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.1.3"></script>
+	<style>
+
+	body {
+	  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	  margin: auto;
+	  position: relative;
+	  width: 960px;
+	}
+	div.content {
+		background-color: blue;
+		height: 40px;
+		margin-bottom: 20px;
+	}
+	</style>
+
+</head>
+<body>
+	<div><a onclick="addDiv()">Add One</div>
+
+	<script type="text/javascript">
+
+		var data = [1, 2, 3, 4, 5];
+
+		drawDivs = function() {
+			var div = d3.select("body").selectAll(".content")
+		    .data(data);
+
+			div.enter().append("div").attr("class", "content");
+			
+			div.style("width", function(d){ 
+		    	 return "" + (10 * d) + "px";
+			})
+			// Add an onclick to remove this datum
+			.on("click", function(d) {
+				for(var i=0;i<data.length;i++){
+					if(data[i]==d){data.splice(i,1);break;}
+				}
+				drawDivs();
+			}); 
+
+			div.exit().remove();
+		}
+	
+		// Add a new datum one larger than the last one in the array
+		addDiv = function() {
+			data[data.length] = data[data.length - 1] + 1;
+			drawDivs();
+		}
+		
+	
+		drawDivs();
+	
+	</script>
+
+</body>		
