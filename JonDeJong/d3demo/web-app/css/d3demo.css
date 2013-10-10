@@ -1,0 +1,27 @@
+.chart rect {
+    stroke: black;
+    fill: #40FF00;
+}
+
+.link {
+    stroke: #999;
+    stroke-opacity: .6;
+    stroke-width: 2;
+}
+
+.chart-border {
+    stroke: #0000FF;
+    stroke-width: 3;
+}
+
+.line {
+    stroke-width: 2;
+}
+
+.padded-container {
+    padding: 25px;
+}
+
+.fixed-nav {
+    width: 150px;
+}
